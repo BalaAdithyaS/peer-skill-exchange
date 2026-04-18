@@ -1,0 +1,23 @@
+from flask import Flask
+from flask_pymongo import PyMongo
+from flask_jwt_extended import JWTManager
+from .config import Config
+
+mongo = PyMongo()
+jwt = JWTManager()
+
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
+
+    mongo.init_app(app)
+    jwt.init_app(app)
+
+    from .routes.auth_routes import auth_bp
+    app.register_blueprint(auth_bp, url_prefix="/auth")
+
+    @app.route("/")
+    def home():
+        return {"message": "MongoDB Backend Running 🚀"}
+
+    return app
